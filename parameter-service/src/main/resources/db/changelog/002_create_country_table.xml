@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="1" author="mahmut">
+        <createTable tableName="country">
+            <column name="code" type="varchar(2)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="definition" type="varchar(255)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="mahmut">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM country WHERE code = 'TR'</sqlCheck>
+        </preConditions>
+        <insert tableName="country">
+            <column name="code" value="TR"/>
+            <column name="name" value="Türkiye"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="3" author="mahmut">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM country WHERE code = 'US'</sqlCheck>
+        </preConditions>
+        <insert tableName="country">
+            <column name="code" value="US"/>
+            <column name="name" value="Birleşik Devletler"/>
+            <column name="definition" value="Amerika Birleşik Devletleri"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="4" author="mahmut">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM country WHERE code = 'DE'</sqlCheck>
+        </preConditions>
+        <insert tableName="country">
+            <column name="code" value="DE"/>
+            <column name="name" value="Almanya"/>
+            <column name="definition" value="Including the island of Heligoland; excluding the territory of Büsingen"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="5" author="mahmut">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM country WHERE code = 'GB'</sqlCheck>
+        </preConditions>
+        <insert tableName="country">
+            <column name="code" value="GB"/>
+            <column name="name" value="İngiltere"/>
+            <column name="definition" value="Büyük Britanya, Kuzey İrlanda, Manş Adaları ve Man Adası ülke kodu"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="6" author="mahmut">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM country WHERE code = 'IR'</sqlCheck>
+        </preConditions>
+        <insert tableName="country">
+            <column name="code" value="IR"/>
+            <column name="name" value="İran"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="7" author="mahmut">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM country WHERE code = 'CH'</sqlCheck>
+        </preConditions>
+        <insert tableName="country">
+            <column name="code" value="CH"/>
+            <column name="name" value="İsviçre"/>
+            <column name="definition" value="Including the German territory of Büsingen and the Italian municipality of Campione d'Italia"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="8" author="mahmut">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM country WHERE code = 'ES'</sqlCheck>
+        </preConditions>
+        <insert tableName="country">
+            <column name="code" value="ES"/>
+            <column name="name" value="İspanya"/>
+            <column name="definition" value="Balear Adaları ve Kanarya Adaları dahil; Ceuta ve Melilla hariç"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="9" author="mahmut">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM country WHERE code = 'EG'</sqlCheck>
+        </preConditions>
+        <insert tableName="country">
+            <column name="code" value="EG"/>
+            <column name="name" value="Mısır"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="10" author="mahmut">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM country WHERE code = 'TH'</sqlCheck>
+        </preConditions>
+        <insert tableName="country">
+            <column name="code" value="TH"/>
+            <column name="name" value="Tayland"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="11" author="mahmut">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM country WHERE code = 'GR'</sqlCheck>
+        </preConditions>
+        <insert tableName="country">
+            <column name="code" value="GR"/>
+            <column name="name" value="Yunanistan"/>
+        </insert>
+    </changeSet>
+
+
+
+</databaseChangeLog>

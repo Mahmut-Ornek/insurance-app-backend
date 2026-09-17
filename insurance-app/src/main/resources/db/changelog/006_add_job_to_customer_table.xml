@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="1" author="mahmut">
+        <preConditions>
+            <tableExists tableName="customer"/>
+            <not>
+                <columnExists tableName="customer" columnName="job_id"/>
+            </not>
+            <tableExists tableName="job"/>
+        </preConditions>
+        <addColumn tableName="customer">
+            <column name="job_id" type="bigint">
+                <constraints nullable="true" foreignKeyName="fk_job_customer" references="job(job_id)"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

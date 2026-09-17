@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="1" author="mahmut">
+        <createTable tableName="exchange_rate">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="currency_code" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rate_date" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="forex_selling" type="decimal(12,4)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint tableName="exchange_rate"
+                             columnNames="currency_code, rate_date"
+                             constraintName="uq_currency_rate_date"/>
+    </changeSet>
+
+</databaseChangeLog>

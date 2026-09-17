@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+
+    <changeSet id="1" author="mahmut">
+        <preConditions onFail="HALT">
+            <not>
+                <tableExists tableName="health_info"/>
+            </not>
+            <tableExists tableName="customer"/>
+            <columnExists tableName="customer" columnName="customer_id"/>
+        </preConditions>
+
+        <createTable tableName="health_info">
+            <column name="health_id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="customer_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_health_info_customer"
+                             references="customer(customer_id)"/>
+            </column>
+
+            <column name="is_smoking" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="height" type="decimal(5,2)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="weight" type="decimal(5,2)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="blood_type" type="varchar(3)">
+                <constraints nullable="false"/>
+            </column>
+
+            <!-- is_smoking = false iken NULL kalmalı, true iken doldurulmalı (aşağıdaki CHECK ile garanti ediliyor) -->
+            <column name="smoking_frequency" type="varchar(10)">
+                <constraints nullable="true"/>
+            </column>
+
+            <!-- has_alcohol_consumption gibi ayrı bir bayrak yok, "NONE" bu alanın kendi içinde tutuluyor -->
+            <column name="alcohol_consumption" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="has_chronic_disease" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="chronic_disease_details" type="varchar(500)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="has_past_surgeries" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="surgery_details" type="varchar(500)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="created_at" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="updated_at" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="created_by" type="varchar(150)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="updated_by" type="varchar(150)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="is_deleted" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="mahmut">
+        <createIndex indexName="idx_health_info_customer_id" tableName="health_info">
+            <column name="customer_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="3" author="mahmut">
+        <sql>
+            ALTER TABLE health_info
+                ADD CONSTRAINT chk_health_info_blood_type
+                    CHECK (blood_type IN ('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'));
+        </sql>
+        <rollback>
+            ALTER TABLE health_info DROP CHECK chk_health_info_blood_type;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="4" author="mahmut">
+        <sql>
+            ALTER TABLE health_info
+                ADD CONSTRAINT chk_health_info_smoking_frequency
+                    CHECK (
+                        (is_smoking = FALSE AND smoking_frequency IS NULL) OR
+                        (is_smoking = TRUE AND smoking_frequency IN ('LIGHT', 'MODERATE', 'HEAVY'))
+                        );
+        </sql>
+        <rollback>
+            ALTER TABLE health_info DROP CHECK chk_health_info_smoking_frequency;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="5" author="mahmut">
+        <sql>
+            ALTER TABLE health_info
+                ADD CONSTRAINT chk_health_info_alcohol_consumption
+                    CHECK (alcohol_consumption IN ('NONE', 'OCCASIONAL', 'REGULAR', 'HEAVY'));
+        </sql>
+        <rollback>
+            ALTER TABLE health_info DROP CHECK chk_health_info_alcohol_consumption;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="6" author="mahmut">
+        <sql>
+            ALTER TABLE health_info
+                ADD CONSTRAINT chk_health_info_chronic_disease
+                    CHECK (
+                        (has_chronic_disease = FALSE AND chronic_disease_details IS NULL) OR
+                        (has_chronic_disease = TRUE AND chronic_disease_details IS NOT NULL)
+                        );
+        </sql>
+        <rollback>
+            ALTER TABLE health_info DROP CHECK chk_health_info_chronic_disease;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="7" author="mahmut">
+        <sql>
+            ALTER TABLE health_info
+                ADD CONSTRAINT chk_health_info_surgeries
+                    CHECK (
+                        (has_past_surgeries = FALSE AND surgery_details IS NULL) OR
+                        (has_past_surgeries = TRUE AND surgery_details IS NOT NULL)
+                        );
+        </sql>
+        <rollback>
+            ALTER TABLE health_info DROP CHECK chk_health_info_surgeries;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="8" author="mahmut">
+        <sql>
+            ALTER TABLE health_info DROP CHECK chk_health_info_chronic_disease;
+        </sql>
+        <rollback>
+            <sql>
+                ALTER TABLE health_info
+                ADD CONSTRAINT chk_health_info_chronic_disease
+                CHECK (
+                (has_chronic_disease = FALSE AND chronic_disease_details IS NULL) OR
+                (has_chronic_disease = TRUE AND chronic_disease_details IS NOT NULL)
+                );
+            </sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="9" author="mahmut">
+        <dropColumn tableName="health_info" columnName="chronic_disease_details"/>
+        <rollback>
+            <addColumn tableName="health_info">
+                <column name="chronic_disease_details" type="varchar(500)">
+                    <constraints nullable="true"/>
+                </column>
+            </addColumn>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="10" author="mahmut">
+        <sql>
+            ALTER TABLE health_info DROP CHECK chk_health_info_blood_type;
+            ALTER TABLE health_info
+                ADD CONSTRAINT chk_health_info_blood_type
+                    CHECK (blood_type IN ('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', '0+', '0-'));
+        </sql>
+        <rollback>
+            <sql>
+                ALTER TABLE health_info DROP CHECK chk_health_info_blood_type;
+                ALTER TABLE health_info
+                ADD CONSTRAINT chk_health_info_blood_type
+                CHECK (blood_type IN ('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', '0+', '0-'));
+            </sql>
+        </rollback>
+    </changeSet>
+
+
+</databaseChangeLog>

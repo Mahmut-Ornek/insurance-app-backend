@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+
+    <changeSet author="mahmut" id="1">
+        <createTable tableName="customer">
+            <column name="customerID" type="integer" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="surname" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="governmentID" type="char(11)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="mother_name" type="varchar(50)"/>
+
+            <column name="father_name" type="varchar(50)"/>
+
+            <column name="birth_date" type="date"/>
+
+            <column name="address" type="varchar(500)"/>
+
+            <column name="is_deleted" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="created_by" type="varchar(50)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="mahmut">
+        <renameColumn tableName="customer" oldColumnName="customerID" newColumnName="customer_id"/>
+        <renameColumn tableName="customer" oldColumnName="governmentID" newColumnName="government_id"/>
+        <addColumn tableName="customer">
+            <column name="username" type="varchar(50)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="3" author="mahmut">
+        <modifyDataType tableName="customer" columnName="customer_id" newDataType="BIGINT"/>
+    </changeSet>
+
+    <changeSet id="4" author="mahmut">
+        <addAutoIncrement tableName="customer" columnName="customer_id" columnDataType="BIGINT"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <include file="001_create_customer_table.xml" relativeToChangelogFile="true"/>
+    <include file="002_create_health_info_table.xml" relativeToChangelogFile="true"/>
+    <include file="003_create_disease_table.xml" relativeToChangelogFile="true"/>
+    <include file="004_create_health_info_disease_table.xml" relativeToChangelogFile="true"/>
+    <include file="005_create_job_table.xml" relativeToChangelogFile="true"/>
+    <include file="006_add_job_to_customer_table.xml" relativeToChangelogFile="true"/>
+    <include file="007_add_email_to_customer_table.xml" relativeToChangelogFile="true"/>
+
+</databaseChangeLog>

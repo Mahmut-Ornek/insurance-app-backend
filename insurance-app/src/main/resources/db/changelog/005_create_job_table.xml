@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="1" author="mahmut">
+        <createTable tableName="job">
+            <column name="job_id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            
+            <column name="name" type="varchar(150)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="risk" type="varchar(15)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    
+    <changeSet id="2" author="mahmut">
+        <sql>
+            ALTER TABLE job
+            ADD CONSTRAINT chk_job_risk
+            CHECK ( risk IN ('LOW', 'MEDIUM', 'HIGH', 'VERY_HIGH'));
+        </sql>
+        <rollback>
+            ALTER TABLE job DROP CHECK chk_job_risk;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="3" author="mahmut">
+        <sql>
+            ALTER TABLE job DROP CHECK chk_job_risk;
+        </sql>
+
+        <sql>
+            UPDATE job SET risk = '1' WHERE risk = 'LOW';
+            UPDATE job SET risk = '2' WHERE risk = 'MEDIUM';
+            UPDATE job SET risk = '3' WHERE risk = 'HIGH';
+            UPDATE job SET risk = '4' WHERE risk = 'VERY_HIGH';
+        </sql>
+
+        <modifyDataType tableName="job" columnName="risk" newDataType="tinyint"/>
+
+        <sql>
+            ALTER TABLE job ADD CONSTRAINT chk_job_risk_range CHECK (risk BETWEEN 1 AND 5);
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

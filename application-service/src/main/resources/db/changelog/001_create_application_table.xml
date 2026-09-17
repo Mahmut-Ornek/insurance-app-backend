@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="1" author="mahmut">
+        <createTable tableName="application">
+            <column name="application_id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="customer_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="product_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="varchar(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="calculated_price" type="decimal(12,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="currency_code" type="VARCHAR(5)" defaultValue="TRY">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rejection_reason" type="varchar(500)"/>
+            <column name="applied_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="decided_at" type="timestamp"/>
+            <column name="decided_by" type="varchar(150)"/>
+            <column name="is_deleted" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex tableName="application" indexName="idx_app_customer_product_status">
+            <column name="customer_id"/>
+            <column name="product_id"/>
+            <column name="status"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="2" author="mahmut">
+        <sql>
+            ALTER TABLE application
+                ADD CONSTRAINT chk_application_status
+                    CHECK (status IN ('PENDING','APPROVED','REJECTED','CANCELLED'));
+        </sql>
+        <rollback>
+            ALTER TABLE application DROP CHECK chk_application_status;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="3" author="mahmut">
+        <renameColumn tableName="application" oldColumnName="rejection_reason" newColumnName="description"/>
+    </changeSet>
+
+    <changeSet id="3-drop-old-constraint" author="mahmut">
+    <sql>
+        ALTER TABLE application DROP CHECK chk_application_status;
+    </sql>
+    </changeSet>
+
+    <changeSet id="4" author="mahmut">
+        <sql>
+            UPDATE application SET status = 'P' WHERE status = 'PENDING';
+            UPDATE application SET status = 'A' WHERE status = 'APPROVED';
+            UPDATE application SET status = 'R' WHERE status = 'REJECTED';
+            UPDATE application SET status = 'C' WHERE status = 'CANCELLED';
+        </sql>
+    </changeSet>
+
+    <changeSet id="5" author="mahmut">
+        <modifyDataType tableName="application" columnName="status" newDataType="varchar(1)"/>
+    </changeSet>
+
+    <changeSet id="6" author="mahmut">
+        <sql>
+            ALTER TABLE application ADD CONSTRAINT chk_application_status
+                CHECK (status IN ('P', 'A', 'R', 'C'));
+        </sql>
+        <rollback>
+            ALTER TABLE application DROP CHECK chk_application_status;
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

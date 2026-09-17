@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="1" author="mahmut">
+        <createTable tableName="collection">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="application_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total_amount" type="decimal(12,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="collected_amount" type="decimal(12,2)" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="currency_code" type="varchar(3)" defaultValue="TRY">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_closed" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="opened_at" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="closed_at" type="datetime"/>
+            <column name="is_deleted" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createIndex tableName="collection" indexName="idx_collection_application_id">
+            <column name="application_id"/>
+        </createIndex>
+    </changeSet>
+
+
+</databaseChangeLog>

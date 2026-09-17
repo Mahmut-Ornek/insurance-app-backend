@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="1" author="mahmut">
+        <preConditions onFail="HALT" onError="HALT">
+            <not>
+                <tableExists tableName="province"/>
+            </not>
+            <tableExists tableName="country"/>
+            <columnExists tableName="country" columnName="code"/>
+        </preConditions>
+        <createTable tableName="province">
+            <column name="province_id" type="BIGINT" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            
+            <column name="country_code" type="varchar(2)">
+                <constraints nullable="false" foreignKeyName="fk_province_country" references="country(code)"/>
+            </column>
+
+            <column name="code" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="mahmut">
+        <addUniqueConstraint tableName="province" columnNames="country_code, code" constraintName="uq_province_country_code"/>
+    </changeSet>
+
+    <changeSet id="3" author="mahmut">
+        <insert tableName="province">
+            <column name="name" value="İstanbul"/>
+            <column name="country_code" value="TR"/>
+            <column name="code" value="34"/>
+        </insert>
+
+        <insert tableName="province">
+            <column name="name" value="Ankara"/>
+            <column name="country_code" value="TR"/>
+            <column name="code" value="06"/>
+        </insert>
+
+        <insert tableName="province">
+            <column name="name" value="California"/>
+            <column name="country_code" value="US"/>
+            <column name="code" value="CA"/>
+        </insert>
+
+        <insert tableName="province">
+            <column name="name" value="New York"/>
+            <column name="country_code" value="US"/>
+            <column name="code" value="NY"/>
+        </insert>
+
+        <insert tableName="province">
+            <column name="name" value="Bayern"/>
+            <column name="country_code" value="DE"/>
+            <column name="code" value="BY"/>
+        </insert>
+
+        <insert tableName="province">
+            <column name="name" value="Berlin"/>
+            <column name="country_code" value="DE"/>
+            <column name="code" value="BE"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

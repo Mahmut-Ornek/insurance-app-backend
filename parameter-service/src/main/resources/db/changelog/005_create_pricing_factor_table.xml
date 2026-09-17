@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="1" author="mahmut">
+        <createTable tableName="pricing_factor">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="factor_type" type="varchar(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="min_value" type="decimal(10,2)"/>
+            <column name="max_value" type="decimal(10,2)"/>
+            <column name="multiplier" type="decimal(5,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(255)"/>
+        </createTable>
+
+        <insert tableName="pricing_factor">
+            <column name="factor_type" value="JOB_RISK"/><column name="min_value" valueNumeric="1"/><column name="max_value" valueNumeric="1"/><column name="multiplier" valueNumeric="1.00"/><column name="description" value="Risk 1 Meslek"/>
+        </insert>
+        <insert tableName="pricing_factor">
+            <column name="factor_type" value="JOB_RISK"/><column name="min_value" valueNumeric="2"/><column name="max_value" valueNumeric="2"/><column name="multiplier" valueNumeric="1.15"/><column name="description" value="Risk 2 Meslek"/>
+        </insert>
+        <insert tableName="pricing_factor">
+            <column name="factor_type" value="JOB_RISK"/><column name="min_value" valueNumeric="3"/><column name="max_value" valueNumeric="3"/><column name="multiplier" valueNumeric="1.30"/><column name="description" value="Risk 3 Meslek"/>
+        </insert>
+        <insert tableName="pricing_factor">
+            <column name="factor_type" value="JOB_RISK"/><column name="min_value" valueNumeric="4"/><column name="max_value" valueNumeric="4"/><column name="multiplier" valueNumeric="1.45"/><column name="description" value="Risk 4 Meslek"/>
+        </insert>
+        <insert tableName="pricing_factor">
+            <column name="factor_type" value="JOB_RISK"/><column name="min_value" valueNumeric="5"/><column name="max_value" valueNumeric="5"/><column name="multiplier" valueNumeric="1.60"/><column name="description" value="Risk 5 Meslek"/>
+        </insert>
+
+        <insert tableName="pricing_factor">
+            <column name="factor_type" value="AGE"/><column name="min_value" valueNumeric="0"/><column name="max_value" valueNumeric="29"/><column name="multiplier" valueNumeric="1.00"/><column name="description" value="30 yaş altı"/>
+        </insert>
+        <insert tableName="pricing_factor">
+            <column name="factor_type" value="AGE"/><column name="min_value" valueNumeric="30"/><column name="max_value" valueNumeric="50"/><column name="multiplier" valueNumeric="1.20"/><column name="description" value="30-50 yaş bandı"/>
+        </insert>
+        <insert tableName="pricing_factor">
+            <column name="factor_type" value="AGE"/><column name="min_value" valueNumeric="51"/><column name="max_value" valueNumeric="150"/><column name="multiplier" valueNumeric="1.50"/><column name="description" value="50 yaş üstü"/>
+        </insert>
+
+        <insert tableName="pricing_factor">
+            <column name="factor_type" value="BMI"/><column name="min_value" valueNumeric="0.00"/><column name="max_value" valueNumeric="24.99"/><column name="multiplier" valueNumeric="1.00"/><column name="description" value="İdeal kilo"/>
+        </insert>
+        <insert tableName="pricing_factor">
+            <column name="factor_type" value="BMI"/><column name="min_value" valueNumeric="25.00"/><column name="max_value" valueNumeric="29.99"/><column name="multiplier" valueNumeric="1.10"/><column name="description" value="Fazla kilolu"/>
+        </insert>
+        <insert tableName="pricing_factor">
+            <column name="factor_type" value="BMI"/><column name="min_value" valueNumeric="30.00"/><column name="max_value" valueNumeric="100.00"/><column name="multiplier" valueNumeric="1.25"/><column name="description" value="Obez"/>
+        </insert>
+
+        <insert tableName="pricing_factor">
+            <column name="factor_type" value="SMOKING"/><column name="min_value" valueNumeric="1"/><column name="max_value" valueNumeric="1"/><column name="multiplier" valueNumeric="1.25"/><column name="description" value="Sigara kullananlar"/>
+        </insert>
+
+        <insert tableName="pricing_factor">
+            <column name="factor_type" value="DISEASE_SEVERITY_COEFFICIENT"/><column name="multiplier" valueNumeric="0.05"/><column name="description" value="Hastalık şiddet çarpan katsayısı"/>
+        </insert>
+
+        <insert tableName="pricing_factor">
+            <column name="factor_type" value="JOB_UNEMPLOYED"/><column name="multiplier" valueNumeric="1.10"/><column name="description" value="İşsiz / Meslek bilgisi olmayan müşteri çarpanı"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: collection-service
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/collection_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=Europe/Istanbul
+    username: root
+    password: ${DB_PASSWORD}
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/changelog.xml
+
+server:
+  port: 8084

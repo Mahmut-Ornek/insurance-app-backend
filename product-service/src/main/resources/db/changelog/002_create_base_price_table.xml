@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="1" author="mahmut">
+        <preConditions onFail="HALT" onError="HALT">
+            <not>
+                <tableExists tableName="base_price"/>
+            </not>
+            <tableExists tableName="product"/>
+            <columnExists tableName="product" columnName="product_id"/>
+        </preConditions>
+        <createTable tableName="base_price">
+            <column name="price_id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            
+            <column name="product_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_base_price_product" references="product(product_id)"/>
+            </column>
+
+            <column name="base_price" type="decimal(10,2)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="currency_code" type="varchar(3)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="month" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="year" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+            
+            <column name="is_deleted" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="created_by" type="varchar(150)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="updated_by" type="varchar(150)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="mahmut">
+        <addUniqueConstraint tableName="base_price" columnNames="product_id, month, year" constraintName="uq_product_base_price"/>
+    </changeSet>
+
+    <changeSet id="3" author="mahmut">
+        <sql>
+            ALTER TABLE base_price ADD CONSTRAINT chk_base_price_month CHECK (month BETWEEN 1 AND 12);
+        </sql>
+        <rollback>
+            ALTER TABLE base_price DROP CHECK chk_base_price_month;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="4" author="mahmut">
+        <sql>
+            ALTER TABLE base_price ADD CONSTRAINT chk_base_price_year CHECK (year >= 2000);
+        </sql>
+        <rollback>
+            ALTER TABLE base_price DROP CHECK chk_base_price_year;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="5" author="mahmut">
+        <sql>
+            ALTER TABLE base_price ADD CONSTRAINT chk_base_price_positive CHECK (base_price > 0);
+        </sql>
+        <rollback>
+            ALTER TABLE base_price DROP CHECK chk_base_price_positive;
+        </rollback>
+    </changeSet>
+    
+</databaseChangeLog>

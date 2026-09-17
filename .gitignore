@@ -1,0 +1,18 @@
+# Environment & Secrets (En önemlisi)
+.env
+*.env
+local.properties
+
+# Gradle & Build çıktıları
+**/build/
+**/.gradle/
+
+# IDE dosyaları
+**/.idea/
+*.iml
+*.iws
+*.ipr
+**/out/
+
+# Loglar
+*.log

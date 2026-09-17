@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="1" author="mahmut">
+        <preConditions onFail="HALT" onError="HALT">
+            <not>
+                <tableExists tableName="district"/>
+            </not>
+            <tableExists tableName="province"/>
+            <columnExists tableName="province" columnName="province_id"/>
+        </preConditions>
+        <createTable tableName="district">
+            <column name="district_id" type="BIGINT" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="province_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_district_province" references="province(province_id)"/>
+            </column>
+
+            <column name="code" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="mahmut">
+        <addUniqueConstraint tableName="district" columnNames="province_id, code" constraintName="uq_district_province_code"/>
+    </changeSet>
+
+    <changeSet id="3" author="mahmut">
+        <addUniqueConstraint tableName="district" columnNames="province_id, name" constraintName="uq_district_province_name"/>
+    </changeSet>
+
+    <changeSet id="4" author="mahmut">
+        <insert tableName="district">
+            <column name="name" value="Kadıköy"/>
+            <column name="province_id" valueComputed="(SELECT province_id FROM province WHERE country_code = 'TR' AND code = '34')"/>
+            <column name="code" value="1826"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

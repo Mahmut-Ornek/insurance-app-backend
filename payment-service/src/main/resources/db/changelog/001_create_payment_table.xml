@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="1" author="mahmut">
+        <createTable tableName="payment">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="collection_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount" type="decimal(12,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="currency_code" type="varchar(3)" defaultValue="TRY">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="varchar(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="conversation_id" type="varchar(100)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="token" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="iyzico_payment_id" type="varchar(100)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="failure_reason" type="varchar(500)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="created_at" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="completed_at" type="datetime"/>
+        </createTable>
+        <createIndex tableName="payment" indexName="idx_payment_collection_id">
+            <column name="collection_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="2" author="mahmut">
+        <sql>
+            ALTER TABLE payment ADD CONSTRAINT chk_payment_status
+                CHECK (status IN ('I', 'S', 'F'));
+        </sql>
+        <rollback>
+            ALTER TABLE payment DROP CHECK chk_payment_status;
+        </rollback>
+    </changeSet>
+
+
+</databaseChangeLog>

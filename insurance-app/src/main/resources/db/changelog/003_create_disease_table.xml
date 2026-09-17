@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="1" author="mahmut">
+        <createTable tableName="disease">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="code" type="varchar(10)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="severity_score" type="tinyint">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="description" type="varchar(500)"/>
+
+            <column name="updated_by" type="varchar(150)"/>
+
+            <column name="update_date" type="datetime"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="mahmut">
+        <sql>
+            ALTER TABLE disease ADD CONSTRAINT chk_disease_severity_score CHECK (severity_score BETWEEN 1 AND 10);
+        </sql>
+        <rollback>
+            ALTER TABLE disease DROP CHECK chk_disease_severity_score;
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

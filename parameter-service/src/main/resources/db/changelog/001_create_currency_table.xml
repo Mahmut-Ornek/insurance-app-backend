@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    
+    <changeSet id="1" author="mahmut">
+        <createTable tableName="currency">
+            <column name="code" type="varchar(3)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="definition" type="varchar(255)"/>
+        </createTable>
+    </changeSet>
+    
+    <changeSet id="2" author="mahmut">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM currency WHERE code = 'TRY'</sqlCheck>
+        </preConditions>
+        <insert tableName="currency">
+            <column name="code" value="TRY"/>
+            <column name="name" value="Türk Lirası"/>
+            <column name="definition" value="Türkiye Cumhuriyeti para birimi"/>
+        </insert>
+    </changeSet>
+    
+    <changeSet id="3" author="mahmut">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM currency WHERE code = 'USD'</sqlCheck>
+        </preConditions>
+        <insert tableName="currency">
+            <column name="code" value="USD"/>
+            <column name="name" value="Amerikan Doları"/>
+            <column name="definition" value="Amerika Birleşik Devletleri para birimi"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="4" author="mahmut">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM currency WHERE code = 'EUR'</sqlCheck>
+        </preConditions>
+        <insert tableName="currency">
+            <column name="code" value="EUR"/>
+            <column name="name" value="Euro"/>
+            <column name="definition" value="Avrupa Birliği'nin resmi ortak para birimi"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="5" author="mahmut">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM currency WHERE code = 'GBP'</sqlCheck>
+        </preConditions>
+        <insert tableName="currency">
+            <column name="code" value="GBP"/>
+            <column name="name" value="İngiltere Sterlini"/>
+            <column name="definition" value="Birleşik Krallık para birimi"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

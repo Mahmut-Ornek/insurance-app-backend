@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="1" author="mahmut">
+        <preConditions onError="HALT" onFail="HALT">
+            <not>
+                <tableExists tableName="collection_payment"/>
+            </not>
+            <tableExists tableName="collection"/>
+            <columnExists tableName="collection" columnName="id"/>
+        </preConditions>
+        <createTable tableName="collection_payment">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="collection_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_collection_payment_collection"
+                             references="collection(id)"/>
+            </column>
+            <column name="amount" type="decimal(12,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="paid_at" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="payment_reference" type="varchar(100)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+
+</databaseChangeLog>

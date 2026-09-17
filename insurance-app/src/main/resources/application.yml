@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: insurance-app
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/customer_info_db
+    username: root
+    password: ${DB_PASSWORD}
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/changelog.xml
+
+product:
+  service:
+    url: http://localhost:8081
+
+parameter:
+  service:
+    url: http://localhost:8082
