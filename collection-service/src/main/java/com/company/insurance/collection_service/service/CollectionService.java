@@ -4,6 +4,7 @@ package com.company.insurance.collection_service.service;
 import com.company.insurance.collection_service.dto.CollectionCreateRequest;
 import com.company.insurance.collection_service.dto.CollectionPaymentItemDto;
 import com.company.insurance.collection_service.dto.CollectionResponse;
+import com.company.insurance.collection_service.dto.PaymentSummaryResponse;
 import com.company.insurance.collection_service.entity.Collection;
 import com.company.insurance.collection_service.entity.CollectionPayment;
 import com.company.insurance.collection_service.exception.CollectionNotFoundException;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -94,5 +96,39 @@ public class CollectionService {
                 .orElseThrow(() -> new CollectionNotFoundException(id));
         collection.setDeleted(true);
         collectionRepository.save(collection);
+    }
+
+    @Transactional(readOnly = true)
+    public List<PaymentSummaryResponse> getAllPayments() {
+        List<CollectionPayment> payments = paymentRepository.findAll();
+        if (payments.isEmpty()) {
+            return List.of();
+        }
+
+        Set<Long> collectionIds = payments.stream()
+                .map(CollectionPayment::getCollectionId)
+                .collect(java.util.stream.Collectors.toSet());
+
+        java.util.Map<Long, Collection> collectionsById = collectionRepository.findAllById(collectionIds).stream()
+                .collect(java.util.stream.Collectors.toMap(Collection::getId, c -> c));
+
+        return payments.stream()
+                .map(payment -> {
+                    Collection collection = collectionsById.get(payment.getCollectionId());
+                    if (collection == null) {
+                        throw new CollectionNotFoundException(payment.getCollectionId());
+                    }
+
+                    return new PaymentSummaryResponse(
+                            payment.getId(),
+                            payment.getCollectionId(),
+                            collection.getApplicationId(),
+                            payment.getAmount(),
+                            collection.getCurrencyCode(),
+                            payment.getPaidAt(),
+                            payment.getPaymentReference()
+                    );
+                })
+                .toList();
     }
 }

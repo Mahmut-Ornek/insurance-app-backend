@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: document-service
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/document_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Europe/Istanbul
+    username: root
+    password: ${DB_PASSWORD}
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/changelog.xml
+
+server:
+  port: 8087
+
+services:
+  collection-service:
+    url: http://localhost:8084
+  application-service:
+    url: http://localhost:8083
+  insurance-app:
+    url: http://localhost:8080
+  email-service:
+    url: http://localhost:8086
