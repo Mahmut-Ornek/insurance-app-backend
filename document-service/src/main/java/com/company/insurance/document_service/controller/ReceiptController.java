@@ -1,11 +1,15 @@
 package com.company.insurance.document_service.controller;
 
-import com.company.insurance.document_service.dto.BatchReceiptResponse;
+import com.company.insurance.document_service.dto.ProcessedPaymentDto;
+import com.company.insurance.document_service.dto.ReceiptCreateRequest;
+import com.company.insurance.document_service.dto.ReceiptResponse;
 import com.company.insurance.document_service.service.ReceiptService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/receipts")
@@ -17,9 +21,13 @@ public class ReceiptController {
         this.receiptService = receiptService;
     }
 
-    @PostMapping("/generate-batch")
-    public ResponseEntity<BatchReceiptResponse> generateBatchReceipts() {
-        BatchReceiptResponse response = receiptService.generateBatchReceipts();
-        return ResponseEntity.ok(response);
+    @GetMapping("/processed-summary")
+    public ResponseEntity<List<ProcessedPaymentDto>> getProcessedPayments() {
+        return ResponseEntity.ok(receiptService.getProcessedPayments());
+    }
+
+    @PostMapping
+    public ResponseEntity<ReceiptResponse> createReceipt(@Valid @RequestBody ReceiptCreateRequest request) {
+        return ResponseEntity.ok(receiptService.saveProcessedReceipt(request));
     }
 }

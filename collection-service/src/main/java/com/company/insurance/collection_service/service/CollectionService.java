@@ -1,6 +1,7 @@
 package com.company.insurance.collection_service.service;
 
 
+import com.company.insurance.collection_service.client.PolicyServiceClient;
 import com.company.insurance.collection_service.dto.CollectionCreateRequest;
 import com.company.insurance.collection_service.dto.CollectionPaymentItemDto;
 import com.company.insurance.collection_service.dto.CollectionResponse;
@@ -21,12 +22,14 @@ import java.util.Set;
 @Service
 @Transactional
 public class CollectionService {
+    private final PolicyServiceClient policyServiceClient;
     private final CollectionRepository collectionRepository;
     private final CollectionPaymentRepository paymentRepository;
 
-    public CollectionService(CollectionRepository collectionRepository, CollectionPaymentRepository paymentRepository){
+    public CollectionService(PolicyServiceClient policyServiceClient, CollectionRepository collectionRepository, CollectionPaymentRepository paymentRepository){
         this.collectionRepository = collectionRepository;
         this.paymentRepository = paymentRepository;
+        this.policyServiceClient = policyServiceClient;
     }
 
     private CollectionResponse toResponse(Collection collection){
@@ -86,6 +89,13 @@ public class CollectionService {
         if (newCollected.compareTo(collection.getTotalAmount()) >= 0){
             collection.setClosed(true);
             collection.setClosedAt(LocalDateTime.now());
+
+            // İZOLE TETİKLEME
+            policyServiceClient.triggerPolicyCreation(
+                    collection.getApplicationId(),
+                    collection.getTotalAmount(),
+                    collection.getCurrencyCode()
+            );
         }
         Collection updated = collectionRepository.save(collection);
         return toResponse(updated);

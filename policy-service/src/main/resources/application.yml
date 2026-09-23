@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: policy-service
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/policy_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Europe/Istanbul
+    username: root
+    password: ${DB_PASSWORD}
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/changelog.xml
+
+server:
+  port: 8088
+
+services:
+  application-service:
+    url: http://localhost:8083
