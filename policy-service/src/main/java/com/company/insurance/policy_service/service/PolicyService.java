@@ -4,6 +4,7 @@ import com.company.insurance.policy_service.client.ApplicationServiceClient;
 import com.company.insurance.policy_service.dto.ApplicationDto;
 import com.company.insurance.policy_service.dto.PolicyCreateRequest;
 import com.company.insurance.policy_service.dto.PolicyResponse;
+import com.company.insurance.policy_service.dto.ProductSalesCountDto;
 import com.company.insurance.policy_service.entity.Policy;
 import com.company.insurance.policy_service.repository.PolicyRepository;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
 
 @Service
 @Transactional
@@ -70,5 +73,12 @@ public class PolicyService {
                 policy.getStatus(),
                 policy.getIssuedAt()
         );
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductSalesCountDto> getSalesSummary(LocalDate from, LocalDate to) {
+        LocalDateTime startDateTime = from.atStartOfDay();
+        LocalDateTime endDateTime = to.atTime(LocalTime.MAX);
+        return policyRepository.countPoliciesGroupedByProduct(startDateTime, endDateTime);
     }
 }

@@ -39,7 +39,7 @@ public class ReceiptBatchConfig {
         Map<Long, Boolean> processedMap = processedList.stream()
                 .collect(Collectors.toMap(ProcessedPaymentDto::collectionPaymentId, ProcessedPaymentDto::emailSent, (e1, e2) -> e1));
 
-        // Filtre: Henüz işlenmemiş VEYA işlenmiş ama maili gitmemiş olanlar
+
         List<PaymentSummaryDto> pending = allPayments.stream()
                 .filter(p -> !processedMap.containsKey(p.id()) || Boolean.FALSE.equals(processedMap.get(p.id())))
                 .toList();
@@ -51,7 +51,7 @@ public class ReceiptBatchConfig {
     @Bean
     public ItemProcessor<PaymentSummaryDto, ReceiptProcessingItem> receiptItemProcessor(
             ApplicationServiceClient applicationClient,
-            InsuranceAppClient insuranceAppClient) {   // emailClient artık burada gerekmiyor
+            InsuranceAppClient insuranceAppClient) {
 
         return payment -> {
             ApplicationDto application = applicationClient.getApplicationById(payment.applicationId());
@@ -67,7 +67,7 @@ public class ReceiptBatchConfig {
 
             ReceiptCreateRequest createRequest = new ReceiptCreateRequest(
                     payment.id(), payment.applicationId(), customer.email(),
-                    payment.amount(), payment.currencyCode(), false);  // emailSent henüz bilinmiyor
+                    payment.amount(), payment.currencyCode(), false);
 
             return new ReceiptProcessingItem(payment, customerName, createRequest);
         };
@@ -78,10 +78,10 @@ public class ReceiptBatchConfig {
             DocumentServiceClient documentClient, EmailServiceClient emailClient) {
         return chunk -> {
             for (ReceiptProcessingItem item : chunk) {
-                // 1. Önce kaydet — gerçek receiptNumber'ı almak için
+
                 ReceiptResponse saved = documentClient.saveReceipt(item.createRequest());
 
-                // 2. Şimdi doğru makbuz numarasıyla e-postayı oluştur ve gönder
+
                 String emailBody = buildReceiptHtml(saved.receiptNumber(), item.customerName(), item.payment());
                 boolean emailSent = false;
                 try {
@@ -94,7 +94,7 @@ public class ReceiptBatchConfig {
                     log.error("Email gönderim hatası. Payment ID: {}, Hata: {}", item.payment().id(), ex.getMessage());
                 }
 
-                // 3. emailSent gerçek sonucuyla tekrar kaydet (saveReceipt zaten idempotent/upsert, ikinci çağrı güvenli)
+
                 documentClient.saveReceipt(new ReceiptCreateRequest(
                         item.createRequest().collectionPaymentId(), item.createRequest().applicationId(),
                         item.createRequest().customerEmail(), item.createRequest().amount(),

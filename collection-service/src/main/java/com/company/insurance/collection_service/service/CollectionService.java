@@ -2,10 +2,7 @@ package com.company.insurance.collection_service.service;
 
 
 import com.company.insurance.collection_service.client.PolicyServiceClient;
-import com.company.insurance.collection_service.dto.CollectionCreateRequest;
-import com.company.insurance.collection_service.dto.CollectionPaymentItemDto;
-import com.company.insurance.collection_service.dto.CollectionResponse;
-import com.company.insurance.collection_service.dto.PaymentSummaryResponse;
+import com.company.insurance.collection_service.dto.*;
 import com.company.insurance.collection_service.entity.Collection;
 import com.company.insurance.collection_service.entity.CollectionPayment;
 import com.company.insurance.collection_service.exception.CollectionNotFoundException;
@@ -140,5 +137,15 @@ public class CollectionService {
                     );
                 })
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public CollectionPeriodSummaryDto getPaymentSummary(LocalDateTime from, LocalDateTime to) {
+        BigDecimal total = paymentRepository.sumPaidAmountBetween(from, to);
+        return new CollectionPeriodSummaryDto(
+                total != null ? total : BigDecimal.ZERO,
+                from,
+                to
+        );
     }
 }

@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: policy-service
+
+server:
+  port: 8090
+
+services:
+  policy-service:
+    url: http://localhost:8088
+  product-service:
+    url: http://localhost:8081
+  collection-service:
+    url: http://localhost:8084
