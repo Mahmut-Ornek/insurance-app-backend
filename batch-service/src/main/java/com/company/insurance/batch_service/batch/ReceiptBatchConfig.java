@@ -17,6 +17,7 @@ import org.springframework.batch.infrastructure.item.support.ListItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.kafka.core.KafkaTemplate;
 
 import java.util.List;
 import java.util.Map;
@@ -45,7 +46,7 @@ public class ReceiptBatchConfig {
                 .toList();
 
         log.info("Reader çalıştı. Toplam taranan: {}, İşlenecek: {}", allPayments.size(), pending.size());
-        return new ListItemReader<PaymentSummaryDto>(pending);
+        return new ListItemReader<>(pending);
     }
 
     @Bean
@@ -75,30 +76,46 @@ public class ReceiptBatchConfig {
 
     @Bean
     public ItemWriter<ReceiptProcessingItem> receiptItemWriter(
-            DocumentServiceClient documentClient, EmailServiceClient emailClient) {
+            DocumentServiceClient documentClient, KafkaTemplate<String, EmailSendRequest> kafkaTemplate) {
         return chunk -> {
             for (ReceiptProcessingItem item : chunk) {
 
+                // 1. Makbuzu Document-Service'e başlangıçta taslak/işleniyor olarak kaydet
                 ReceiptResponse saved = documentClient.saveReceipt(item.createRequest());
 
-
+                // 2. E-posta içeriğini (HTML) hazırla
                 String emailBody = buildReceiptHtml(saved.receiptNumber(), item.customerName(), item.payment());
                 boolean emailSent = false;
+
+                // 3. Senkron HTTP yerine asenkron Kafka yayını yap
                 try {
-                    EmailSendResponse response = emailClient.sendEmail(new EmailSendRequest(
+                    EmailSendRequest emailRequest = new EmailSendRequest(
                             item.createRequest().customerEmail(),
                             "Ödeme Makbuzunuz: " + saved.receiptNumber(),
-                            emailBody));
-                    emailSent = response != null && response.success();
+                            emailBody
+                    );
+
+                    // Mesajı Kafka kuyruğuna (email-requests topic'ine) fırlat ve hemen devam et
+                    kafkaTemplate.send("email-requests", emailRequest);
+
+                    // Kuyruğa başarıyla teslim edildiği için bayrağı true yapıyoruz
+                    emailSent = true;
+                    log.info("E-posta talebi Kafka kuyruguna basariyla iletildi. Makbuz No: {}, Alici: {}",
+                            saved.receiptNumber(), item.createRequest().customerEmail());
+
                 } catch (Exception ex) {
-                    log.error("Email gönderim hatası. Payment ID: {}, Hata: {}", item.payment().id(), ex.getMessage());
+                    log.error("Kafka'ya e-posta mesaji gonderilirken hata olustu. Payment ID: {}, Hata: {}",
+                            item.payment().id(), ex.getMessage());
                 }
 
-
+                // 4. Durumu Document-Service üzerinde güncelle (emailSent=true olmazsa reader bunu tekrar tekrar okur)
                 documentClient.saveReceipt(new ReceiptCreateRequest(
-                        item.createRequest().collectionPaymentId(), item.createRequest().applicationId(),
-                        item.createRequest().customerEmail(), item.createRequest().amount(),
-                        item.createRequest().currencyCode(), emailSent));
+                        item.createRequest().collectionPaymentId(),
+                        item.createRequest().applicationId(),
+                        item.createRequest().customerEmail(),
+                        item.createRequest().amount(),
+                        item.createRequest().currencyCode(),
+                        emailSent));
             }
         };
     }
