@@ -5,6 +5,7 @@ import com.company.insurance.parameter_service.dto.PricingFactorResponse;
 import com.company.insurance.parameter_service.dto.UpdatePricingFactorRequest;
 import com.company.insurance.parameter_service.entity.PricingFactor;
 import com.company.insurance.parameter_service.repository.PricingFactorRepository;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,9 +13,14 @@ import java.util.List;
 
 @Service
 public class PricingFactorService {
+    private static final String CACHE_KEY = "pricing-factors";
+    private final RedisTemplate<String, List<PricingFactorResponse>> redisTemplate;
     private final PricingFactorRepository pricingFactorRepository;
 
-    public PricingFactorService(PricingFactorRepository pricingFactorRepository){this.pricingFactorRepository = pricingFactorRepository;}
+    public PricingFactorService(PricingFactorRepository pricingFactorRepository, RedisTemplate<String, List<PricingFactorResponse>> redisTemplate){
+        this.pricingFactorRepository = pricingFactorRepository;
+        this.redisTemplate = redisTemplate;
+    }
 
     private PricingFactorResponse toResponse(PricingFactor factor){
         return new PricingFactorResponse(
@@ -28,7 +34,14 @@ public class PricingFactorService {
     }
 
     public List<PricingFactorResponse> getAll(){
-        return pricingFactorRepository.findAll().stream().map(this::toResponse).toList();
+        List<PricingFactorResponse> cached = redisTemplate.opsForValue().get(CACHE_KEY);
+        if (cached != null){
+            return cached;
+        }
+
+        List<PricingFactorResponse> fresh = pricingFactorRepository.findAll().stream().map(this::toResponse).toList();
+        redisTemplate.opsForValue().set(CACHE_KEY, fresh);
+        return fresh;
     }
 
     @Transactional
@@ -42,6 +55,9 @@ public class PricingFactorService {
         }
 
         PricingFactor saved = pricingFactorRepository.save(factor);
+
+        redisTemplate.delete(CACHE_KEY);
+
         return toResponse(saved);
     }
 }
